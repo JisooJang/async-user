@@ -28,7 +28,7 @@ public class UserController {
         long start = System.currentTimeMillis();
         List<CompletableFuture<User>> futureList = new ArrayList<>();
         for(String user : users) {
-            CompletableFuture<User> userResult = gitHubLookupService.findUser(user);
+            CompletableFuture<User> userResult = gitHubLookupService.findUserAsync(user);
             futureList.add(userResult);
         }
 
