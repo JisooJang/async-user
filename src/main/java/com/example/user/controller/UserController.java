@@ -1,6 +1,6 @@
 package com.example.user.controller;
 
-import com.example.user.domain.User;
+import com.example.user.payload.GitHubLookupUser;
 import com.example.user.service.GitHubLookupService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -24,27 +24,27 @@ public class UserController {
     }
 
     @PostMapping("/api/v1/users/github/async")
-    public ResponseEntity<List<User>> getUsers(@RequestBody Set<String> users) throws InterruptedException {
+    public ResponseEntity<List<GitHubLookupUser>> getUsers(@RequestBody Set<String> users) throws InterruptedException {
         long start = System.currentTimeMillis();
-        List<CompletableFuture<User>> futureList = new ArrayList<>();
+        List<CompletableFuture<GitHubLookupUser>> futureList = new ArrayList<>();
         for(String user : users) {
-            CompletableFuture<User> userResult = gitHubLookupService.findUserAsync(user);
+            CompletableFuture<GitHubLookupUser> userResult = gitHubLookupService.findUserAsync(user);
             futureList.add(userResult);
         }
 
-        List<User> usersResult= futureList.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        List<GitHubLookupUser> usersResult= futureList.stream().map(CompletableFuture::join).collect(Collectors.toList());
         log.info("time : " + (System.currentTimeMillis() - start));
 
         return ResponseEntity.ok(usersResult);
     }
 
     @PostMapping("/api/v1/users/github/sync")
-    public ResponseEntity<List<User>> getUsersSync(@RequestBody Set<String> users) throws InterruptedException {
+    public ResponseEntity<List<GitHubLookupUser>> getUsersSync(@RequestBody Set<String> users) throws InterruptedException {
         long start = System.currentTimeMillis();
-        List<User> usersResult = new ArrayList<>();
+        List<GitHubLookupUser> usersResult = new ArrayList<>();
         for(String user : users) {
-            User userResult = gitHubLookupService.findUserSync(user);
-            usersResult.add(userResult);
+            GitHubLookupUser gitHubLookupUserResult = gitHubLookupService.findUserSync(user);
+            usersResult.add(gitHubLookupUserResult);
         }
         log.info("time : " + (System.currentTimeMillis() - start));
         return ResponseEntity.ok(usersResult);
