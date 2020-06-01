@@ -1,4 +1,4 @@
-package com.example.user.domain;
+package com.example.user.payload;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class User {
+public class GitHubLookupUser {
     private String name;
     private String avatar_url;
     private String html_url;
