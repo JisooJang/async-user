@@ -1,9 +1,11 @@
 package com.example.user.controller;
 
 import com.example.user.payload.GitHubLookupUser;
+import com.example.user.payload.UserModel;
 import com.example.user.service.GitHubLookupService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +25,7 @@ public class UserController {
         this.gitHubLookupService = service;
     }
 
+    @CrossOrigin(origins = {"http://localhost:18080"}) // 명시한 origin에서 현재 서버의 아래 URI 요청을 허용한다. Controller 레벨에서도 설정 가능.
     @PostMapping("/api/v1/users/github/async")
     public ResponseEntity<List<GitHubLookupUser>> getUsers(@RequestBody Set<String> users) throws InterruptedException {
         long start = System.currentTimeMillis();
@@ -32,7 +35,9 @@ public class UserController {
             futureList.add(userResult);
         }
 
-        List<GitHubLookupUser> usersResult= futureList.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        List<GitHubLookupUser> usersResult= futureList.stream()
+                .map(CompletableFuture::join)
+                .collect(Collectors.toList());
         log.info("time : " + (System.currentTimeMillis() - start));
 
         return ResponseEntity.ok(usersResult);
@@ -48,5 +53,10 @@ public class UserController {
         }
         log.info("time : " + (System.currentTimeMillis() - start));
         return ResponseEntity.ok(usersResult);
+    }
+
+    @PostMapping("/api/v1/user/test")
+    public ResponseEntity<UserModel> testUser(@RequestBody UserModel user) {
+        return ResponseEntity.ok(user);
     }
 }
