@@ -8,6 +8,8 @@ import com.example.user.exception.InvalidPayloadException;
 import com.example.user.exception.SignUpFailedException;
 import com.example.user.payload.SignUpUser;
 import com.example.user.service.MemberService;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,9 +46,8 @@ public class JwtAuthenticationSignUpFilter extends AbstractAuthenticationProcess
 
         try {
             model = new ObjectMapper().readValue(req.getInputStream(), SignUpUser.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
+        } catch(JsonParseException | JsonMappingException e) {
+            throw new SignUpFailedException("Invalid signup payload data.", e);
         }
 
         // save Member DB
