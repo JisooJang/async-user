@@ -31,19 +31,19 @@ public class MemberService {
     }
 
     public void validationPayload(SignUpUser model) {
-        // 비밀번호 검사
+        // 1. 비밀번호 검사
+        if(!Pattern.matches(ValidationRegex.USEREMAIL, model.getEmail())) {
+            throw new InvalidPayloadException("Invalid user email format.");
+        }
         if(!Pattern.matches(ValidationRegex.PASSWORD, model.getPassword())) {
             throw new InvalidPayloadException(
                     "password should be use alphabet, number, special-character at least 1 time each." +
                             "And length should be over 8 characters.");
         }
-
-        // TODO: email 정규식 검사 추가
     }
 
     @Transactional
     public Member signUp(SignUpUser model) {
-        // password 암호화 저장
         // 트랜잭션 레벨 설정
         if(memberRepository.findByEmail(model.getEmail()) != null) {
             throw new InvalidPayloadException("user email already exists.");
