@@ -2,9 +2,9 @@ package com.example.user.config.security.filters;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.example.mycoupon.config.security.JWTSecurityConstants;
-import com.example.mycoupon.config.security.SecurityMember;
-import com.example.mycoupon.payload.UserModel;
+import com.example.user.config.security.JWTSecurityConstants;
+import com.example.user.config.security.SecurityMember;
+import com.example.user.payload.UserModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

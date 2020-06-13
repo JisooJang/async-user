@@ -6,7 +6,7 @@ import com.example.user.config.security.JWTSecurityConstants;
 import com.example.user.config.security.SecurityMember;
 import com.example.user.exception.InvalidPayloadException;
 import com.example.user.exception.SignUpFailedException;
-import com.example.user.payload.UserModel;
+import com.example.user.payload.SignUpUser;
 import com.example.user.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +40,10 @@ public class JwtAuthenticationSignUpFilter extends AbstractAuthenticationProcess
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req,
                                                 HttpServletResponse res) throws AuthenticationException, IOException {
-        UserModel model = null;
+        SignUpUser model = null;
 
         try {
-            model = new ObjectMapper().readValue(req.getInputStream(), UserModel.class);
+            model = new ObjectMapper().readValue(req.getInputStream(), SignUpUser.class);
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
@@ -60,7 +60,7 @@ public class JwtAuthenticationSignUpFilter extends AbstractAuthenticationProcess
         return getAuthenticationManager().authenticate(
                 // Create login token
                 new UsernamePasswordAuthenticationToken(
-                        model.getId(),
+                        model.getEmail(),
                         model.getPassword(),
                         Collections.emptyList()
                 )
