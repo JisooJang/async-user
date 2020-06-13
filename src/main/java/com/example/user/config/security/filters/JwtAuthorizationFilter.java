@@ -4,10 +4,9 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.InvalidClaimException;
 import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.example.mycoupon.config.security.JWTSecurityConstants;
-import com.example.mycoupon.exceptions.InvalidTokenException;
+import com.example.user.config.security.JWTSecurityConstants;
+import com.example.user.exception.InvalidTokenException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -65,7 +64,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                         //.getSubject();
                         .getAudience().get(0);
             } catch(JWTDecodeException | InvalidClaimException e) { // JWTVerificationException 로 통합 (두개 다 JWTVerificationException를 상속받은 exception)
-                throw new InvalidTokenException(e, HttpStatus.UNAUTHORIZED.value());
+                throw new InvalidTokenException(e, e.getLocalizedMessage());
             }
 
             if(user != null) {
