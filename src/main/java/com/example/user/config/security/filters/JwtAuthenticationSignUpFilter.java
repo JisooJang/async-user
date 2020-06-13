@@ -50,6 +50,10 @@ public class JwtAuthenticationSignUpFilter extends AbstractAuthenticationProcess
             throw new SignUpFailedException("Invalid signup payload data.", e);
         }
 
+        if(!model.validateNullCheck()) {
+            throw new SignUpFailedException("Invalid signup payload data (null or empty string delivered.)", null);
+        }
+
         // save Member DB
         try {
             memberService.signUp(model);
