@@ -2,6 +2,7 @@ package com.example.user.service;
 
 import com.example.user.domain.Member;
 import com.example.user.exception.InvalidPayloadException;
+import com.example.user.payload.SignUpUser;
 import com.example.user.payload.UserModel;
 import com.example.user.repository.MemberRepository;
 import com.example.user.utils.ValidationRegex;
@@ -12,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DateTimeException;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -27,30 +30,42 @@ public class MemberService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void validationPassword(String password) {
-        if(!Pattern.matches(ValidationRegex.PASSWORD, password)) {
+    public void validationPayload(SignUpUser model) {
+        // 비밀번호 검사
+        if(!Pattern.matches(ValidationRegex.PASSWORD, model.getPassword())) {
             throw new InvalidPayloadException(
                     "password should be use alphabet, number, special-character at least 1 time each." +
                             "And length should be over 8 characters.");
         }
+
+        // TODO: email 정규식 검사 추가
     }
 
     @Transactional
-    public Member signUp(UserModel model) {
+    public Member signUp(SignUpUser model) {
         // password 암호화 저장
         // 트랜잭션 레벨 설정
-        if(memberRepository.findByMediaId(model.getId()) != null) {
-            throw new InvalidPayloadException("user id already exists.");
+        if(memberRepository.findByEmail(model.getEmail()) != null) {
+            throw new InvalidPayloadException("user email already exists.");
         }
-        validationPassword(model.getPassword());
-        Member member = new Member(model.getId(), model.getPassword());
-        member.setPassword(passwordEncoder.encode(member.getPassword()));
+        validationPayload(model);
+        Member member;
+        try {
+            member = Member.builder()
+                    .email(model.getEmail())
+                    .password(passwordEncoder.encode(model.getPassword()))
+                    .lastName(model.getLastName())
+                    .firstName(model.getFirstName())
+                    .birthDate(LocalDate.of(model.getBirthYear(), model.getBirthMonth(), model.getBirthDay()))
+                    .build();
+        } catch(DateTimeException e) {
+            throw new InvalidPayloadException("Invalid birth date time arguments.");
+        }
         try {
             return memberRepository.save(member);
         } catch(ConstraintViolationException ex) {
             throw new InvalidPayloadException("Invalid arguments.");
         }
-
     }
 
     @Transactional(readOnly = true)
