@@ -16,8 +16,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String mediaId) throws UsernameNotFoundException {
-        Member member = memberRepository.findByMediaId(mediaId);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Member member = memberRepository.findByEmail(email);
         if(member == null) {
             throw new UsernameNotFoundException("Cannot find user.");
         } else {
