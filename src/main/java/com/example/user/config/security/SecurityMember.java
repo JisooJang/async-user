@@ -11,7 +11,7 @@ public class SecurityMember extends User {
     private final long id;
 
     public SecurityMember(Member member) {
-        super(member.getMediaId(), member.getPassword(), Collections.emptyList());
+        super(member.getEmail(), member.getPassword(), Collections.emptyList());
         this.id = member.getId();
     }
 }
