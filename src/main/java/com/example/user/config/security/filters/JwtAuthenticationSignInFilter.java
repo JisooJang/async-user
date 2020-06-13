@@ -4,8 +4,12 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.example.user.config.security.JWTSecurityConstants;
 import com.example.user.config.security.SecurityMember;
+import com.example.user.exception.SignInFailedException;
 import com.example.user.payload.UserModel;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +26,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Objects;
 
 public class JwtAuthenticationSignInFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
@@ -31,22 +36,26 @@ public class JwtAuthenticationSignInFilter extends UsernamePasswordAuthenticatio
         this.authenticationManager = authenticationManager;
     }
 
+    @SneakyThrows
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req,
                                                 HttpServletResponse res) throws AuthenticationException {
         UserModel model = null;
         try {
             model = new ObjectMapper().readValue(req.getInputStream(), UserModel.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
+            Objects.requireNonNull(model.getEmail());
+            Objects.requireNonNull(model.getPassword());
+        } catch (JsonParseException | JsonMappingException e) {
+            throw new SignInFailedException("Invalid signin payload data.", e);
+        } catch (NullPointerException e) {
+            throw new SignInFailedException("'email' and 'password' data should be required.", e);
         }
 
         // Authenticate user
         return authenticationManager.authenticate(
                 // Create login token
                 new UsernamePasswordAuthenticationToken(
-                        model.getId(),
+                        model.getEmail(),
                         model.getPassword(),
                         Collections.emptyList()
                 )
@@ -82,6 +91,10 @@ public class JwtAuthenticationSignInFilter extends UsernamePasswordAuthenticatio
             throws IOException, ServletException {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         PrintWriter writer = response.getWriter();
-        writer.println("login failed.");
+        if(failed instanceof SignInFailedException) {
+            writer.println(failed.getLocalizedMessage());
+        } else {
+            writer.println("login failed.");
+        }
     }
 }
