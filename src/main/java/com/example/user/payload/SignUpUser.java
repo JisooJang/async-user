@@ -11,9 +11,9 @@ public class SignUpUser {
     private String firstName; // 성
     private String password;
 
-    private String birthMonth; // 생일 월
-    private String birthDay; // 생일 일
-    private String birthYear; // 생일 연도
+    private int birthMonth; // 생일 월
+    private int birthDay; // 생일 일
+    private int birthYear; // 생일 연도
 
     private boolean marketing; // 마케팅 메시지 수신 여부
 
