@@ -5,10 +5,7 @@ import com.example.user.payload.UserModel;
 import com.example.user.service.GitHubLookupService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,10 +15,10 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
-public class UserController {
+public class MemberController {
     private final GitHubLookupService gitHubLookupService;
 
-    public UserController(GitHubLookupService service) {
+    public MemberController(GitHubLookupService service) {
         this.gitHubLookupService = service;
     }
 
@@ -58,5 +55,10 @@ public class UserController {
     @PostMapping("/api/v1/user/test")
     public ResponseEntity<UserModel> testUser(@RequestBody UserModel user) {
         return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/api/v1/login/oauth2/github/callback")
+    public ResponseEntity<?> githubLogin() {
+        return ResponseEntity.ok(null);
     }
 }
