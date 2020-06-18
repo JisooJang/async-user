@@ -1,15 +1,17 @@
 package com.example.user.controller;
 
 import com.example.user.payload.GitHubLookupUser;
+import com.example.user.payload.GithubAccessTokenRequest;
 import com.example.user.payload.UserModel;
 import com.example.user.service.GitHubLookupService;
+import com.example.user.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -17,9 +19,13 @@ import java.util.stream.Collectors;
 @RestController
 public class MemberController {
     private final GitHubLookupService gitHubLookupService;
+    private final MemberService memberService;
+    private final RestTemplate restTemplate;
 
-    public MemberController(GitHubLookupService service) {
-        this.gitHubLookupService = service;
+    public MemberController(GitHubLookupService gitHubLookupService, MemberService memberService) {
+        this.gitHubLookupService = gitHubLookupService;
+        this.memberService = memberService;
+        this.restTemplate = new RestTemplate();
     }
 
     @CrossOrigin(origins = {"http://localhost:18080"}) // 명시한 origin에서 현재 서버의 아래 URI 요청을 허용한다. Controller 레벨에서도 설정 가능.
@@ -57,8 +63,19 @@ public class MemberController {
         return ResponseEntity.ok(user);
     }
 
-    @GetMapping("/api/v1/login/oauth2/github/callback")
-    public ResponseEntity<?> githubLogin() {
-        return ResponseEntity.ok(null);
+    @GetMapping("/api/v1/login/oauth2/github")
+    public ResponseEntity<?> getGithubLoginURL(HttpServletRequest request) {
+        // 1. Request a user's GitHub identity
+        String sessionId = request.getSession().getId();
+        return ResponseEntity.ok(gitHubLookupService.getGithubLoginURL(sessionId));
     }
+
+    @GetMapping("/api/v1/login/oauth2/github/callback")
+    public ResponseEntity<?> githubLoginCallback(HttpServletRequest request, @RequestParam String code, @RequestParam String state) {
+        String sessionId = request.getSession().getId();
+        String accessToken = gitHubLookupService.getGithubAccessToken(sessionId, code, state);
+        return ResponseEntity.ok(accessToken);
+    }
+
+
 }
