@@ -1,11 +1,17 @@
 package com.example.user.service;
 
+import com.example.user.client.GithubClient;
+import com.example.user.exception.InvalidStateException;
 import com.example.user.payload.GitHubLookupUser;
+import com.example.user.payload.GithubAccessTokenRequest;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -18,12 +24,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
 @PropertySource("classpath:rest_client.properties")
 public class GitHubLookupService {
     private final RestTemplate restTemplate;
+
+    private final StringRedisTemplate redisTemplate;
+
+    private final GithubClient githubClient;
 
     @Value("${github.client_id}")
     private String clientId;
@@ -35,10 +46,15 @@ public class GitHubLookupService {
     private String callbackUri;
 
     @Value("${github.authorize_uri}")
-    private String authorize_uri;
+    private String authorizeUri;
 
-    public GitHubLookupService(RestTemplateBuilder restTemplateBuilder) {
+    @Value("${github.state.cache.prefix}")
+    private String cachePrefix;
+
+    public GitHubLookupService(RestTemplateBuilder restTemplateBuilder, StringRedisTemplate redisTemplate, GithubClient githubClient) {
         this.restTemplate = restTemplateBuilder.build();
+        this.redisTemplate = redisTemplate;
+        this.githubClient = githubClient;
     }
 
     @Async
@@ -77,30 +93,43 @@ public class GitHubLookupService {
 
     public String getGithubLoginURL(String sessionId) {
         // TODO: state값 저장시 cache key를 어떻게 저장할지? (key : github-state-{request_session_id}, value=state 값), ttl 10분
+        ValueOperations<String, String> values = redisTemplate.opsForValue();
         String state = getUniqueState();
         System.out.println("request session_id1 : " + sessionId);
-        return String.format(authorize_uri + "?client_id=%s&redirect_uri=%s&state=%s",
+
+        values.set(cachePrefix + sessionId, state, 10, TimeUnit.MINUTES); // timeout: 10분
+        return String.format(authorizeUri + "?client_id=%s&redirect_uri=%s&state=%s",
                 clientId, callbackUri, state);
     }
 
     public String getGithubAccessToken(String sessionId, String code, String state) {
         // 1. 캐시에 있는 state값과 응답으로 온 state값 비교하기. (ttl 10분) (request_session_id 키로 찾음)
         System.out.println("request session_id2 (in callback) : " + sessionId);
+        ValueOperations<String, String> values = redisTemplate.opsForValue();
+
+        String cacheState = values.get(cachePrefix + sessionId);
+        System.out.println(cacheState + " : " + state);
+        if(!state.equals(cacheState)) {
+            throw new InvalidStateException("Invalid state value.");
+        }
 
         // 2. state값이 일치하면, csrf 공격이 아닌걸로 간주하고, oauth server에 access token 요청
         Map<String, String> requestBody = new HashMap<>();
-        requestBody.put("client_id", "1defce5e47a534ce611e");
-        requestBody.put("client_secret", "f336b84760020ee75ee13a04f77ece27bcb48d56");
+        requestBody.put("client_id", clientId);
+        requestBody.put("client_secret", clientSecret);
         requestBody.put("code", code);
         requestBody.put("state", state);
 
-        ResponseEntity<String> response = restTemplate.postForEntity(
-                "https://github.com/login/oauth/access_token",
-                requestBody,
-                String.class
-        );
+        // TODO: POJO로 requestbody 설정시 HttpConverter 에러남. (encode error)
+//        GithubAccessTokenRequest requestBody = GithubAccessTokenRequest.builder()
+//                .client_id(clientId)
+//                .client_secret(clientSecret)
+//                .code(code)
+//                .state(state)
+//                .build();
 
-        String accessToken = Objects.requireNonNull(response.getBody()).split("&")[0].split("=")[1];
+        String responseBody = githubClient.getAccessToken(requestBody);
+        String accessToken = Objects.requireNonNull(responseBody).split("&")[0].split("=")[1];
         System.out.println("access_token : " + accessToken);
         return accessToken;
     }
