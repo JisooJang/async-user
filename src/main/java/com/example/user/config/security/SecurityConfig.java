@@ -71,8 +71,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .addFilterBefore(signUpFilter(authenticationManagerBean()), UsernamePasswordAuthenticationFilter.class)
                     .addFilter(jwtAuthorizationFilter(authenticationManagerBean()))
                 .authorizeRequests()
-                    .antMatchers(HttpMethod.POST, "/signup").permitAll()
-                    .antMatchers(HttpMethod.POST, "/login").permitAll()
+                    .antMatchers(HttpMethod.POST, "/signup", "/login").permitAll()
+                    .antMatchers(HttpMethod.GET, "/api/v1/login/oauth2/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/").permitAll()
                     .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint());
