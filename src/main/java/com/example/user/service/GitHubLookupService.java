@@ -3,16 +3,12 @@ package com.example.user.service;
 import com.example.user.client.GithubClient;
 import com.example.user.exception.InvalidStateException;
 import com.example.user.payload.GitHubLookupUser;
-import com.example.user.payload.GithubAccessTokenRequest;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -95,7 +91,7 @@ public class GitHubLookupService {
         // TODO: state값 저장시 cache key를 어떻게 저장할지? (key : github-state-{request_session_id}, value=state 값), ttl 10분
         ValueOperations<String, String> values = redisTemplate.opsForValue();
         String state = getUniqueState();
-        System.out.println("request session_id1 : " + sessionId);
+        log.info("request session_id1 : " + sessionId);
 
         values.set(cachePrefix + sessionId, state, 10, TimeUnit.MINUTES); // timeout: 10분
         return String.format(authorizeUri + "?client_id=%s&redirect_uri=%s&state=%s",
@@ -104,11 +100,11 @@ public class GitHubLookupService {
 
     public String getGithubAccessToken(String sessionId, String code, String state) {
         // 1. 캐시에 있는 state값과 응답으로 온 state값 비교하기. (ttl 10분) (request_session_id 키로 찾음)
-        System.out.println("request session_id2 (in callback) : " + sessionId);
+        log.info("request session_id2 (in callback) : " + sessionId);
         ValueOperations<String, String> values = redisTemplate.opsForValue();
 
         String cacheState = values.get(cachePrefix + sessionId);
-        System.out.println(cacheState + " : " + state);
+        log.info(cacheState + " : " + state);
         if(!state.equals(cacheState)) {
             throw new InvalidStateException("Invalid state value.");
         }
@@ -129,8 +125,6 @@ public class GitHubLookupService {
 //                .build();
 
         String responseBody = githubClient.getAccessToken(requestBody);
-        String accessToken = Objects.requireNonNull(responseBody).split("&")[0].split("=")[1];
-        System.out.println("access_token : " + accessToken);
-        return accessToken;
+        return Objects.requireNonNull(responseBody).split("&")[0].split("=")[1];
     }
 }
