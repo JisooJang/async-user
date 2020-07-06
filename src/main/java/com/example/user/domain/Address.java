@@ -2,6 +2,7 @@ package com.example.user.domain;
 
 import com.example.user.enums.AddressType;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -30,6 +31,18 @@ public class Address {
 
     @Enumerated(EnumType.STRING)
     private AddressType addressType;
+
+    @Builder
+    public Address(String street1, String street2, String state, String city, String country,
+                   AddressType addressType, Integer zipcode) {
+        this.street1 = street1;
+        this.street2 = street2;
+        this.state = state;
+        this.city = city;
+        this.country = country;
+        this.addressType = addressType;
+        this.zipcode = zipcode;
+    }
 
 
 }
