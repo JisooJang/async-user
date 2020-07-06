@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Member {
+public class Member extends BaseEntity {
     // 각 필드 validation 상세 annotation 추가할 것. (size, blank 등)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,9 +32,9 @@ public class Member {
     @Column(name = "first_name", nullable = false, length = 50)
     private String firstName;
 
-    @Column(name = "join_date", nullable = false, updatable = false)
-    @CreationTimestamp
-    private LocalDateTime joinDate;
+//    @Column(name = "join_date", nullable = false, updatable = false)
+//    @CreationTimestamp
+//    private LocalDateTime joinDate;
 
     @OneToOne(cascade = CascadeType.ALL)
     private Account account;
