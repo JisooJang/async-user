@@ -55,7 +55,7 @@ public class GitHubLookupService {
 
     @Async
     public CompletableFuture<GitHubLookupUser> findUserAsync(String user) throws InterruptedException {
-        log.info("finding GitHub User async..." + Thread.currentThread().getName());
+        log.debug("finding GitHub User async..." + Thread.currentThread().getName());
         String url = String.format("https://api.github.com/users/%s", user);
         GitHubLookupUser lookupResult;
         try {
@@ -69,7 +69,7 @@ public class GitHubLookupService {
     }
 
     public GitHubLookupUser findUserSync(String user) throws InterruptedException {
-        log.info("finding GitHub User sybc..." + Thread.currentThread().getName());
+        log.debug("finding GitHub User sybc..." + Thread.currentThread().getName());
         String url = String.format("https://api.github.com/users/%s", user);
         GitHubLookupUser lookupResult;
         try {
@@ -91,7 +91,7 @@ public class GitHubLookupService {
         // TODO: state값 저장시 cache key : github-state-{request_session_id}, value=state 값), ttl 10분
         ValueOperations<String, String> values = redisTemplate.opsForValue();
         String state = getUniqueState();
-        log.info("request session_id1 : " + sessionId);
+        log.debug("request session_id1 : " + sessionId);
 
         values.set(cachePrefix + sessionId, state, 10, TimeUnit.MINUTES); // timeout: 10분
         return String.format(authorizeUri + "?client_id=%s&redirect_uri=%s&state=%s",
@@ -101,11 +101,11 @@ public class GitHubLookupService {
     // TODO: 비동기. CompletableFuture
     public String getGithubAccessToken(String sessionId, String code, String state) {
         // 1. 캐시에 있는 state값과 응답으로 온 state값 비교하기. (ttl 10분) (request_session_id 키로 찾음)
-        log.info("request session_id2 (in callback) : " + sessionId);
+        log.debug("request session_id2 (in callback) : " + sessionId);
         ValueOperations<String, String> values = redisTemplate.opsForValue();
 
         String cacheState = values.get(cachePrefix + sessionId);
-        log.info(cacheState + " : " + state);
+        log.debug(cacheState + " : " + state);
         if(!state.equals(cacheState)) {
             throw new InvalidStateException("Invalid state value.");
         }
