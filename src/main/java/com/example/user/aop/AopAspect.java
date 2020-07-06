@@ -19,7 +19,7 @@ public class AopAspect {
         long executionTime = System.currentTimeMillis() - startTime;
 
         log.info(joinPoint.getSignature() + " executed in " + executionTime);
-        log.info("ID: " + member.getMediaId() + " assigned to coupon(" + proceed + ")");
+        log.info("email: " + member.getEmail() + " assigned to coupon(" + proceed + ")");
         return proceed;
     }
 }
