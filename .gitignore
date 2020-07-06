@@ -32,5 +32,5 @@ out/
 .vscode/
 
 ### properties ###
-application.yml
-rest_clinet.properties
+/src/main/resources/application.yml
+/src/main/resources/rest_clinet.properties
