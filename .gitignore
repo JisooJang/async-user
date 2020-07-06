@@ -30,3 +30,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### properties ###
+application.yml
+rest_clinet.properties
