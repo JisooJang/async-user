@@ -7,12 +7,10 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Entity
+@Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Entity
-@Table(name = "member")
 public class Member {
     // 각 필드 validation 상세 annotation 추가할 것. (size, blank 등)
     @Id
@@ -37,6 +35,9 @@ public class Member {
     @Column(name = "join_date", nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDateTime joinDate;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private Account account;
 
     @Builder
     public Member(String email, String password, LocalDate birthDate, String lastName, String firstName) {
