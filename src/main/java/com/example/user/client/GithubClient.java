@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Map;
 
-@FeignClient(name = "githubClient", url = "https://github.com/login/oauth")
+@FeignClient(name = "githubClient", url = "https://github.com/login/oauth", fallback = GithubClientFallback.class)
 public interface GithubClient {
     @PostMapping(value="/access_token", consumes= "application/json")
     public String getAccessToken(@RequestBody Map<String, String> request);
