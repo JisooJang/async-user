@@ -1,13 +1,11 @@
 package com.example.user.domain;
 
 import com.example.user.enums.AddressType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @NoArgsConstructor
@@ -43,6 +41,5 @@ public class Address extends BaseEntity {
         this.addressType = addressType;
         this.zipcode = zipcode;
     }
-
 
 }
