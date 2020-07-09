@@ -1,6 +1,5 @@
 package com.example.user.client;
 
-import com.example.user.payload.GithubAccessTokenRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
