@@ -1,9 +1,10 @@
 package com.example.user.service;
 
+import com.example.user.domain.Account;
 import com.example.user.domain.Member;
 import com.example.user.exception.InvalidPayloadException;
+import com.example.user.exception.MemberNotFoundException;
 import com.example.user.payload.SignUpUser;
-import com.example.user.payload.UserModel;
 import com.example.user.repository.MemberRepository;
 import com.example.user.utils.ValidationRegex;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -69,7 +69,9 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Member> findById(long id) {
-        return memberRepository.findById(id);
+    public Member findById(Long id) {
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new MemberNotFoundException(id));
     }
+
 }
