@@ -1,10 +1,6 @@
 package com.example.user.domain;
 
-import com.fasterxml.jackson.databind.ser.Serializers;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -18,23 +14,16 @@ import java.util.List;
 @AllArgsConstructor
 public class Account extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String accountNumber;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<CreditCard> creditCards = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<CreditCard> creditCards;
+    private List<Address> addresses = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Address> addresses;
-
-    public Account(String accountNumber, List<Address> addresses) {
-        this.accountNumber = accountNumber;
-        this.addresses = addresses;
-    }
-
-    public Account(String accountNumber) {
-        this.accountNumber = accountNumber;
+    @Builder
+    public Account(Long id) {
+        this.id = id;
     }
 }

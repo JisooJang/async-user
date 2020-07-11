@@ -16,7 +16,7 @@ public class Member extends BaseEntity {
     // 각 필드 validation 상세 annotation 추가할 것. (size, blank 등)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "email", unique = true, nullable = false, length = 30)
     private String email;  // TODO: add index
@@ -38,6 +38,7 @@ public class Member extends BaseEntity {
 //    private LocalDateTime joinDate;
 
     @OneToOne(cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
     private Account account;
 
     @Builder
