@@ -1,6 +1,6 @@
 package com.example.user.config.security;
 
-import com.example.user.domain.Member;
+import com.example.user.entity.Member;
 import com.example.user.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

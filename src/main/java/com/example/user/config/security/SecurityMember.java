@@ -1,6 +1,6 @@
 package com.example.user.config.security;
 
-import com.example.user.domain.Member;
+import com.example.user.entity.Member;
 import lombok.Getter;
 import org.springframework.security.core.userdetails.User;
 
