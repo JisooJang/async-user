@@ -1,7 +1,6 @@
 package com.example.user.service;
 
-import com.example.user.domain.Account;
-import com.example.user.domain.Member;
+import com.example.user.entity.Member;
 import com.example.user.exception.InvalidPayloadException;
 import com.example.user.exception.MemberNotFoundException;
 import com.example.user.payload.SignUpUser;

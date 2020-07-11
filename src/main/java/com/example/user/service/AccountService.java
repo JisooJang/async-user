@@ -1,6 +1,6 @@
 package com.example.user.service;
 
-import com.example.user.domain.Account;
+import com.example.user.entity.Account;
 import com.example.user.exception.AccountNotFoundException;
 import com.example.user.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
