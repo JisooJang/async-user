@@ -1,4 +1,4 @@
-package com.example.user.domain;
+package com.example.user.entity;
 
 import com.example.user.enums.AddressType;
 import lombok.*;

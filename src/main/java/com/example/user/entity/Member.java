@@ -1,11 +1,9 @@
-package com.example.user.domain;
+package com.example.user.entity;
 
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
