@@ -4,9 +4,12 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.example.user.config.security.JWTSecurityConstants;
 import com.example.user.config.security.SecurityMember;
+import com.example.user.domain.Account;
+import com.example.user.domain.Member;
 import com.example.user.exception.InvalidPayloadException;
 import com.example.user.exception.SignUpFailedException;
 import com.example.user.payload.SignUpUser;
+import com.example.user.service.AccountService;
 import com.example.user.service.MemberService;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -34,6 +37,9 @@ public class JwtAuthenticationSignUpFilter extends AbstractAuthenticationProcess
     private MemberService memberService;
 
     @Autowired
+    private AccountService accountService;
+
+    @Autowired
     public JwtAuthenticationSignUpFilter(AuthenticationManager authenticationManager) {
         super(new AntPathRequestMatcher("/signup"));
         setAuthenticationManager(authenticationManager);
@@ -56,7 +62,8 @@ public class JwtAuthenticationSignUpFilter extends AbstractAuthenticationProcess
 
         // save Member DB
         try {
-            memberService.signUp(model);
+            Member member = memberService.signUp(model);
+            accountService.save(Account.builder().id(member.getId()).build());
         } catch(InvalidPayloadException e) {
             throw new SignUpFailedException(e.getLocalizedMessage(), e);
         }
