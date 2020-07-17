@@ -17,7 +17,6 @@ public class NotiService {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    @Async
     public void sendAlarmTalkToUser(EmailSend emailSend) {
         log.info("sendAlarmTalkToUser. thread : " + Thread.currentThread().getName());
         kafkaTemplate.send("email.notification", emailSend);
