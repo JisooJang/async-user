@@ -31,6 +31,9 @@ public class Member extends BaseEntity {
     @Column(name = "first_name", nullable = false, length = 50)
     private String firstName;
 
+    @Column(name = "phone_number", nullable = false, length = 11)
+    private String phoneNumber;
+
 //    @Column(name = "join_date", nullable = false, updatable = false)
 //    @CreationTimestamp
 //    private LocalDateTime joinDate;
@@ -40,11 +43,12 @@ public class Member extends BaseEntity {
     private Account account;
 
     @Builder
-    public Member(String email, String password, LocalDate birthDate, String lastName, String firstName) {
+    public Member(String email, String password, LocalDate birthDate, String lastName, String firstName, String phoneNumber) {
         this.email = email;
         this.password = password;
         this.birthDate = birthDate;
         this.lastName = lastName;
         this.firstName = firstName;
+        this.phoneNumber = phoneNumber;
     }
 }

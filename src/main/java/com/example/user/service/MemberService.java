@@ -56,6 +56,7 @@ public class MemberService {
                     .lastName(model.getLastName())
                     .firstName(model.getFirstName())
                     .birthDate(LocalDate.of(model.getBirthYear(), model.getBirthMonth(), model.getBirthDay()))
+                    .phoneNumber(model.getPhoneNumber())
                     .build();
         } catch(DateTimeException e) {
             throw new InvalidPayloadException("Invalid birth date time arguments.");

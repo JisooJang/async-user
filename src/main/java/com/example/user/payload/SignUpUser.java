@@ -15,6 +15,7 @@ public class SignUpUser {
     private String lastName; // 이름
     private String firstName; // 성
     private String password;
+    private String phoneNumber;
 
     private int birthMonth; // 생일 월
     private int birthDay; // 생일 일
@@ -23,7 +24,8 @@ public class SignUpUser {
     private Boolean marketing; // 마케팅 메시지 수신 여부
 
     public boolean validateNullCheck() {
-        if(Strings.isBlank(email) || Strings.isBlank(lastName) || Strings.isBlank(firstName) || Strings.isBlank(password)) {
+        if(Strings.isBlank(email) || Strings.isBlank(lastName) || Strings.isBlank(firstName) || Strings.isBlank(password)
+        || Strings.isBlank(phoneNumber)) {
             return false;
         }
         if(marketing == null) {
