@@ -3,6 +3,7 @@ package com.example.user.service;
 import com.example.user.entity.Member;
 import com.example.user.exception.InvalidPayloadException;
 import com.example.user.exception.MemberNotFoundException;
+import com.example.user.payload.EmailSend;
 import com.example.user.payload.SignUpUser;
 import com.example.user.repository.MemberRepository;
 import com.example.user.utils.ValidationRegex;
@@ -22,11 +23,13 @@ import java.util.regex.Pattern;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final NotiService notiService;
 
     @Autowired
-    public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
+    public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder, NotiService notiService) {
         this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
+        this.notiService = notiService;
     }
 
     public void validationPayload(SignUpUser model) {
@@ -61,11 +64,17 @@ public class MemberService {
         } catch(DateTimeException e) {
             throw new InvalidPayloadException("Invalid birth date time arguments.");
         }
+        Member memberResult;
         try {
-            return memberRepository.save(member);
+            memberResult = memberRepository.save(member);
         } catch(ConstraintViolationException ex) {
             throw new InvalidPayloadException("Invalid arguments.");
         }
+
+        EmailSend emailSend = EmailSend.builder().build();
+        notiService.sendAlarmTalkToUser(emailSend);
+
+        return memberResult;
     }
 
     @Transactional(readOnly = true)
