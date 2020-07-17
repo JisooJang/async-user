@@ -71,7 +71,14 @@ public class MemberService {
             throw new InvalidPayloadException("Invalid arguments.");
         }
 
-        EmailSend emailSend = EmailSend.builder().build();
+        EmailSend emailSend = EmailSend.builder()
+                .senderAddress("teamcoucle@gmail.com")
+                .senderName("team-coucle")
+                .title(memberResult.getFirstName() + "님! 쿠클 서비스 회원가입을 환영합니다.")
+                .body(memberResult.getFirstName() + memberResult.getLastName() + "님, coucle 서비스에서의 다양하고 소중한 경험을 얻어가시길 바랍니다.")
+                .build();
+        emailSend.addReceiverList(memberResult.getEmail(), "MRT0");
+
         notiService.sendAlarmTalkToUser(emailSend);
 
         return memberResult;

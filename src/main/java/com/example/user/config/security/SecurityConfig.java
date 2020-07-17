@@ -1,6 +1,5 @@
 package com.example.user.config.security;
 
-import com.example.user.config.security.CustomUserDetailsService;
 import com.example.user.config.security.filters.CustomAuthenticationEntryPoint;
 import com.example.user.config.security.filters.JwtAuthenticationSignInFilter;
 import com.example.user.config.security.filters.JwtAuthenticationSignUpFilter;
@@ -9,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
