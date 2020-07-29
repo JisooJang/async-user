@@ -48,6 +48,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         if(authentication != null) {
             req.setAttribute("memberId", Long.parseLong((String)authentication.getPrincipal()));
+            req.setAttribute("accessToken", header);
+
         }
         chain.doFilter(req, res);
     }
