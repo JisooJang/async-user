@@ -1,5 +1,6 @@
 package com.example.user.entity;
 
+import com.example.user.payload.Coupon;
 import lombok.*;
 
 import javax.persistence.*;
@@ -21,6 +22,9 @@ public class Account extends BaseEntity {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Address> addresses = new ArrayList<>();
+
+    @Transient
+    private List<Coupon> coupons = new ArrayList<>();
 
     @Builder
     public Account(Long id) {
