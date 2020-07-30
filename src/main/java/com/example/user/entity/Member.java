@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Table(name = "coucle_member")
 public class Member extends BaseEntity {
     // 각 필드 validation 상세 annotation 추가할 것. (size, blank 등)
     @Id
@@ -31,12 +32,8 @@ public class Member extends BaseEntity {
     @Column(name = "first_name", nullable = false, length = 50)
     private String firstName;
 
-    @Column(name = "phone_number", nullable = false, length = 11)
+    @Column(name = "phone_number", unique = true, nullable = false, length = 11)
     private String phoneNumber;
-
-//    @Column(name = "join_date", nullable = false, updatable = false)
-//    @CreationTimestamp
-//    private LocalDateTime joinDate;
 
     @OneToOne(cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
